@@ -90,8 +90,7 @@ export default function HomeScreen() {
       <StatusBar style="light" />
       <Image
         blurRadius={1}
-        // Image not supplied to group. Ignoring this line
-        // source={require("file:///C:/Users/user/Downloads/images%20(1).jpg")}
+        source={require("file:///C:/Users/user/Downloads/images%20(1).jpg")}
         style={StyleSheet.flatten([styles.backgroundImage])}
       />
 
