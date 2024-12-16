@@ -41,7 +41,8 @@ const suggestion = () => {
     <View style={styles.container}>
       <Image
         blurRadius={1}
-        source={require("C:/Users/wuiyi/CPRG303-project/assets/images/170617UP_20160918_010.jpg")}
+        // broken tried to fix but reverted to supplied file
+        // source={require("C:/Users/wuiyi/CPRG303-project/assets/images/170617UP_20160918_010.jpg")}
         style={StyleSheet.flatten([styles.backgroundImage])}
       />
       <View style={styles.boxContainer}>

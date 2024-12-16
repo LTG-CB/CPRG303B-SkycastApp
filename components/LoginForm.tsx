@@ -6,7 +6,7 @@ const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false); 
-  const logo = require('C:/Users/wuiyi/CPRG303-project/assets/images/applogo-trans.png'); 
+  const logo = require('assets\images\applogo-trans.png'); 
 
   const handleLoginPage = () => {
     if (email === '' || password === '') {
