@@ -8,6 +8,7 @@ import { fetchWeather } from './src/services/weatherService';
 import { saveLocation, getLocation, savePreferences, getPreferences } from './src/storage/userStorage';
 import { PreferenceKeys } from './src/types';
 
+// Default preferences for the weather parameters
 const defaultPreferences: Record<PreferenceKeys, boolean> = {
   weather_code: true,
   temperature_2m_max: true,
@@ -31,10 +32,11 @@ const defaultPreferences: Record<PreferenceKeys, boolean> = {
 };
 
 export default function App() {
-  const [location, setLocation] = useState<string>('');
-  const [preferences, setPreferences] = useState(defaultPreferences);
-  const [weatherData, setWeatherData] = useState<Record<string, any>>({});
+  const [location, setLocation] = useState<string>(''); // Stores the user's location
+  const [preferences, setPreferences] = useState(defaultPreferences); // Stores the user's preferences
+  const [weatherData, setWeatherData] = useState<Record<string, any>>({}); // Stores the fetched weather data
 
+  // Load saved location and preferences when the app starts
   useEffect(() => {
     const loadData = async () => {
       const savedLocation = await getLocation();
@@ -45,13 +47,14 @@ export default function App() {
     loadData();
   }, []);
 
+  // Fetch weather data whenever the location changes
   useEffect(() => {
     const fetchWeatherData = async () => {
       if (location) {
         try {
-          const { latitude, longitude } = await fetchCoordinates(location);
-          const weather = await fetchWeather(latitude, longitude, preferences); // Pass preferences
-          setWeatherData(weather);
+          const { latitude, longitude } = await fetchCoordinates(location); // Get coordinates for the location
+          const weather = await fetchWeather(latitude, longitude, preferences); // Fetch weather data based on preferences
+          setWeatherData(weather); // Update weather data state
         } catch (error) {
           console.error('Error fetching weather data:', error);
         }
@@ -59,39 +62,40 @@ export default function App() {
     };
     fetchWeatherData();
   }, [location]);
-  
+
+  // Handle location input change and fetch updated weather data
   const handleLocationChange = async (newLocation: string) => {
     try {
       setLocation(newLocation); // Update the location state
-      await saveLocation(newLocation); // Save the location in storage
-  
-      // Fetch coordinates and weather data immediately after saving
-      const { latitude, longitude } = await fetchCoordinates(newLocation);
-      const weather = await fetchWeather(latitude, longitude, preferences); // Pass user preferences
+      await saveLocation(newLocation); // Save the location to storage
+
+      const { latitude, longitude } = await fetchCoordinates(newLocation); // Fetch coordinates
+      const weather = await fetchWeather(latitude, longitude, preferences); // Fetch updated weather data
       setWeatherData(weather); // Update the weather data state
     } catch (error) {
       console.error('Error updating location and fetching weather data:', error);
-      alert('Failed to fetch weather data. Please check your input or try again.');
+      alert('Failed to fetch weather data. Please check your input or try again.'); // Alert the user if there's an issue
     }
   };
 
+  // Toggle user preference for a specific weather parameter
   const handleTogglePreference = (key: PreferenceKeys) => {
     const updatedPreferences = {
       ...preferences,
-      [key]: !preferences[key],
+      [key]: !preferences[key], // Toggle the preference
     };
-    setPreferences(updatedPreferences);
-    savePreferences(updatedPreferences);
+    setPreferences(updatedPreferences); // Update preferences state
+    savePreferences(updatedPreferences); // Save updated preferences to storage
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined} // Adjust keyboard behavior for iOS
     >
       <ScrollView
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps="handled" // Allow dismissing keyboard by tapping
       >
         <LocationInput location={location} onLocationChange={handleLocationChange} />
         <PreferencesToggles preferences={preferences} onToggle={handleTogglePreference} />
@@ -103,11 +107,11 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // Ensures the view takes up the full screen
   },
   contentContainer: {
-    flexGrow: 1,
-    padding: 20,
-    paddingBottom: 50,
+    flexGrow: 1, // Allows scrollable content to expand
+    padding: 20, // Add padding around content
+    paddingBottom: 50, // Add extra padding at the bottom
   },
 });

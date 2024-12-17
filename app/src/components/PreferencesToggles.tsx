@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Switch, StyleSheet } from "react-native";
 
+// Define the Props interface for the component
 interface Props {
   preferences: Record<string, boolean>;
   onToggle: (key: string) => void;
@@ -30,6 +31,7 @@ const PreferencesToggles: React.FC<Props> = ({ preferences, onToggle }) => {
             onValueChange={() => onToggle(key)}
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={value ? "#f5dd4b" : "#f4f3f4"}
+
           />
         </View>
       ))}
