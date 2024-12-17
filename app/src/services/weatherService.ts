@@ -17,29 +17,32 @@ export const fetchWeather = async (
   preferences: Record<string, boolean> // User-selected preferences as a record of keys (parameters) and boolean values
 ) => {
   try {
-    // Extract the keys from the preferences object where the value is true (toggled on)
-    const selectedParameters = Object.keys(preferences)
-      .filter((key) => preferences[key]) // Filter out the preferences that are not selected (false)
-      .join(','); // Join the selected keys into a comma-separated string for the API
+    const dailyParams = [];
+    if (preferences.maxTemperature) dailyParams.push('temperature_2m_max');
+    if (preferences.minTemperature) dailyParams.push('temperature_2m_min');
+    if (preferences.apparentMaxTemperature) dailyParams.push('apparent_temperature_max');
+    if (preferences.apparentMinTemperature) dailyParams.push('apparent_temperature_min');
+    if (preferences.precipitation) dailyParams.push('precipitation_sum');
+    if (preferences.rain) dailyParams.push('rain_sum');
+    if (preferences.snowfall) dailyParams.push('snowfall_sum');
+    if (preferences.windSpeed) dailyParams.push('windspeed_10m_max');
+    if (preferences.windGusts) dailyParams.push('windgusts_10m_max');
+    if (preferences.weatherCode) dailyParams.push('weathercode');
 
-    // Validate that at least one parameter has been selected
-    if (!selectedParameters) {
-      throw new Error('No parameters selected for weather data.');
-    }
+    const params = {
+      latitude,
+      longitude,
+      daily: dailyParams.join(','),
+      forecast_days: 1,
+      timezone: 'auto',
+    };
 
-    // Make the API call with the selected parameters
-    const response = await axios.get(WEATHER_BASE_URL, {
-      params: {
-        latitude, // Latitude of the location
-        longitude, // Longitude of the location
-        daily: selectedParameters, // Comma-separated list of selected parameters
-        forecast_days: 1, // Request data for one day
-        timezone: 'auto', // Automatically adjust the timezone based on location
-      },
-    });
+    const response = await axios.get(WEATHER_BASE_URL, { params });
 
-    // Return the daily weather data from the API response
-    return response.data.daily;
+    console.log('Weather API response:', response.data);
+
+    return response.data;
+
   } catch (error) {
     // Log the error to the console and rethrow it
     console.error('Error fetching weather:', error);
