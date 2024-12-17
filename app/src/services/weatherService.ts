@@ -2,41 +2,37 @@ import axios from 'axios';
 
 const WEATHER_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 
-/**
- * Fetch weather data for a given latitude and longitude based on user preferences.
- * @param latitude - Latitude of the location
- * @param longitude - Longitude of the location
- * @param preferences - User preferences for weather data
- * @returns Weather data for the specified location
- */
 export const fetchWeather = async (
   latitude: number,
   longitude: number,
   preferences: Record<string, boolean>
 ) => {
   try {
-    // Get the list of keys that are toggled on in preferences
-    const selectedParameters = Object.keys(preferences)
-      .filter((key) => preferences[key]) // Include only toggled-on keys
-      .join(',');
+    const dailyParams = [];
+    if (preferences.maxTemperature) dailyParams.push('temperature_2m_max');
+    if (preferences.minTemperature) dailyParams.push('temperature_2m_min');
+    if (preferences.apparentMaxTemperature) dailyParams.push('apparent_temperature_max');
+    if (preferences.apparentMinTemperature) dailyParams.push('apparent_temperature_min');
+    if (preferences.precipitation) dailyParams.push('precipitation_sum');
+    if (preferences.rain) dailyParams.push('rain_sum');
+    if (preferences.snowfall) dailyParams.push('snowfall_sum');
+    if (preferences.windSpeed) dailyParams.push('windspeed_10m_max');
+    if (preferences.windGusts) dailyParams.push('windgusts_10m_max');
+    if (preferences.weatherCode) dailyParams.push('weathercode');
 
-    // Check if at least one parameter is selected
-    if (!selectedParameters) {
-      throw new Error('No parameters selected for weather data.');
-    }
+    const params = {
+      latitude,
+      longitude,
+      daily: dailyParams.join(','),
+      forecast_days: 1,
+      timezone: 'auto',
+    };
 
-    // Make the API call with dynamically selected parameters
-    const response = await axios.get(WEATHER_BASE_URL, {
-      params: {
-        latitude,
-        longitude,
-        daily: selectedParameters, // Use selected parameters in the API call
-        forecast_days: 1,
-        timezone: 'auto',
-      },
-    });
+    const response = await axios.get(WEATHER_BASE_URL, { params });
 
-    return response.data.daily;
+    console.log('Weather API response:', response.data);
+
+    return response.data;
   } catch (error) {
     console.error('Error fetching weather:', error);
     throw error;

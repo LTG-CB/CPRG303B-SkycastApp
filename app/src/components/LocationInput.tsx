@@ -1,26 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 interface Props {
-  location: string; // Current location of the user
-  onLocationChange: (location: string) => void; // Function to update the user's location
+  location: string;
+  onLocationChange: (location: string) => void;
 }
 
 export default function LocationInput({ location, onLocationChange }: Props) {
-  const [input, setInput] = useState(location); // Local state to manage the input field
+  const [input, setInput] = useState(location);
+
+  const handleInputChange = (text: string) => {
+    setInput(text);
+    onLocationChange(text); // Update parent component's state immediately
+  };
 
   return (
-    <View>
-      {/* Display the current location */}
-      <Text>Current Location: {location || 'Not set'}</Text>
-      {/* Input field for user to enter their city */}
+    <View style={styles.container}>
       <TextInput
+        style={styles.input}
         placeholder="Enter your city"
         value={input}
-        onChangeText={setInput}
+        onChangeText={handleInputChange}
       />
-      {/* Button to save the input location */}
-      <Button title="Save Location" onPress={() => onLocationChange(input)} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '80%', // Adjust width as needed
+  },
+  input: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    borderRadius: 5,
+  },
+});
